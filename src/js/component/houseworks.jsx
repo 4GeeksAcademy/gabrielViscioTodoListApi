@@ -4,15 +4,15 @@ const HouseWorks = () => {
     const [houseWorks, setHouseWorks] = useState([]);
     const [newWork, setNewWork] = useState('');
 
-    // Función para agregar una nueva tarea
+    
     const addHouseWork = () => {
         if (newWork.trim()) {
             setHouseWorks([...houseWorks, newWork]);
-            setNewWork('');  // Limpiar el input después de agregar
+            setNewWork('');  
         }
     };
 
-    // Función para eliminar una tarea
+  
     const removeHouseWork = (indexToRemove) => {
         const updatedHouseWorks = houseWorks.filter((_, index) => index !== indexToRemove);
         setHouseWorks(updatedHouseWorks);
@@ -37,6 +37,7 @@ const HouseWorks = () => {
                         </li>
                     ))}
                 </ul>
+                <h4>{houseWorks.length} items left</h4>
             </div>
         </>
     );
