@@ -1,12 +1,24 @@
+/* index.css */
 
-/* 
+/* Estilo general para la lista */
+.list-group li {
+    position: relative;
+}
 
-    You can write your own styles here...
-    
-    
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
-    
-    import 'relative/path/to/stylesheet.scss';
+/* Selector de ID para el hover */
+#remove-button-0:hover,
+#remove-button-1:hover,
+#remove-button-2:hover,
+#remove-button-3:hover,
+#remove-button-4:hover {
+    visibility: visible;
+}
 
-*/
+/* Generaliza el hover para todos los botones */
+.list-group li:hover button {
+    visibility: visible;
+}
+
+body {
+    background-color: aquamarine;
+}
