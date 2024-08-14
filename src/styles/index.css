@@ -1,22 +1,11 @@
-/* index.css */
-
-/* Estilo general para la lista */
-.list-group li {
-    position: relative;
+/* Ocultar el botón "x" por defecto */
+.remove-button {
+    display: none;
 }
 
-/* Selector de ID para el hover */
-#remove-button-0:hover,
-#remove-button-1:hover,
-#remove-button-2:hover,
-#remove-button-3:hover,
-#remove-button-4:hover {
-    visibility: visible;
-}
-
-/* Generaliza el hover para todos los botones */
-.list-group li:hover button {
-    visibility: visible;
+/* Mostrar el botón "x" cuando se hace hover en el list item */
+.list-group-item:hover .remove-button {
+    display: block;
 }
 
 body {

@@ -17,8 +17,14 @@ const HouseWorks = () => {
         setHouseWorks(updatedHouseWorks);
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            addHouseWork();
+        }
+    };
+
     return (
-        <div className="" style={{ width: '50rem', backgroundColor: 'lightgrey', margin: 'auto' }}>
+        <div className="container" style={{ width: '50rem', backgroundColor: 'lightgrey', margin: 'auto' }}>
             <h1 style={{ fontSize: '5rem', textAlign:'center', color:'grey', }}>todos</h1>
             <div style={{ backgroundColor: 'white', width: '35rem', margin: 'auto' }}>
                 <input
@@ -26,24 +32,24 @@ const HouseWorks = () => {
                     type="text"
                     value={newWork}
                     onChange={(e) => setNewWork(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     placeholder="what needs to be done?"
                 />
-                <button onClick={addHouseWork}>Agregar</button>
                 <ul
                     style={{ listStyle: 'none', padding: 0 }}
                     className="list-group">
                     {houseWorks.map((work, index) => (
-                        <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem', borderBottom: '1px solid #ccc' }}>
+                        <li key={index} className="list-group-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem', borderBottom: '1px solid #ccc' }}>
                             <span>{work}</span>
                             <button 
                                 onClick={() => removeHouseWork(index)}
                                 id={`remove-button-${index}`}
+                                className="remove-button"
                                 style={{
-                                   // Por defecto oculto
                                     backgroundColor: 'transparent',
                                     border: 'none',
-                                    color: 'red',
-                                    fontSize: '1rem',
+                                    color: 'grey',
+                                    fontSize: '1.2rem',
                                     cursor: 'pointer'
                                 }}>
                                 x
