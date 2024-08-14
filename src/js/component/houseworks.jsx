@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../../styles/index.css';
+import backgroundimg from '/workspaces/gabrielViscioTodoList/src/img/gris.jpg';
 
 const HouseWorks = () => {
     const [houseWorks, setHouseWorks] = useState([]);
@@ -24,11 +25,18 @@ const HouseWorks = () => {
     };
 
     return (
-        <div className="container" style={{ width: '50rem', backgroundColor: 'lightgrey', margin: 'auto' }}>
-            <h1 style={{ fontSize: '5rem', textAlign:'center', color:'grey', }}>todos</h1>
+        <div 
+            className="container" 
+            style={{
+                width: '50rem', 
+                backgroundImage: `url(${backgroundimg})`, 
+                backgroundSize: 'cover', 
+                margin: 'auto' 
+            }}>
+            <h1 style={{opacity:'40%', fontSize: '6rem', textAlign:'center', color:'#7e610a', fontWeight: 100, textDecoration: 'none' }}>todos</h1>
             <div style={{ backgroundColor: 'white', width: '35rem', margin: 'auto' }}>
                 <input
-                    style={{ width: '35rem' }}
+                    style={{ width: '35rem', height:'3.5rem', border:'none' }}
                     type="text"
                     value={newWork}
                     onChange={(e) => setNewWork(e.target.value)}
@@ -39,7 +47,7 @@ const HouseWorks = () => {
                     style={{ listStyle: 'none', padding: 0 }}
                     className="list-group">
                     {houseWorks.map((work, index) => (
-                        <li key={index} className="list-group-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem', borderBottom: '1px solid #ccc' }}>
+                        <li key={index} className="list-group-item" style={{color:'grey',display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem', borderBottom: '1px solid #ccc' }}>
                             <span>{work}</span>
                             <button 
                                 onClick={() => removeHouseWork(index)}
