@@ -28,6 +28,7 @@ const HouseWorks = () => {
         <div 
             className="container" 
             style={{
+                height:'100rem',
                 width: '50rem', 
                 backgroundImage: `url(${backgroundimg})`, 
                 backgroundSize: 'cover', 
