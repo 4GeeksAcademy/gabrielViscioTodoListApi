@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../../styles/index.css';
-import backgroundimg from '/workspaces/gabrielViscioTodoList/src/img/gris.jpg';
+import backgroundimg from '../../img/gris.jpg';
 
 const HouseWorks = () => {
     const [houseWorks, setHouseWorks] = useState([]);
