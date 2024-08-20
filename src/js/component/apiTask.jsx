@@ -6,89 +6,69 @@ const ApiTask = () => {
     const [tasks, setTasks] = useState([]);
     const [newTask, setNewTask] = useState("");
 
-    // Obtener las tareas desde la API
-    const getTasks = () => {
-        fetch(API_URL)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.todos) {
-                    setTasks(data.todos);
-                } else {
-                    console.error("La respuesta de la API no tiene el formato esperado:", data);
-                }
-            })
-            .catch(error => console.error('Error al obtener las tareas:', error));
-    };
-
-    // Añadir una nueva tarea
-    const addTask = () => {
-        if (newTask.trim() === "") return;
-
-        const newTaskObject = { label: newTask, is_done: false };
-
-        const body = {
-            name: "gabriel_viscio",
-            todos: [...tasks, newTaskObject]
-        };
-
-        fetch(API_URL, {
-            method: "PUT", // Cambiar a PUT ya que se podría estar reemplazando la lista completa
-            body: JSON.stringify(body),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al actualizar las tareas');
-            }
-            return response.json();
-        })
-        .then(() => {
-            setNewTask("");
-            getTasks(); // Refrescar las tareas después de la actualización
-        })
-        .catch(error => console.error('Error actualizando las tareas:', error));
-    };
-
-    // Eliminar una tarea
-    const deleteTask = (index) => {
-        const updatedTasks = tasks.filter((_, i) => i !== index);
-
-        const body = {
-            name: "gabriel_viscio",
-            todos: updatedTasks
-        };
-
-        fetch(API_URL, {
-            method: "PUT", // Cambiar a PUT ya que se podría estar reemplazando la lista completa
-            body: JSON.stringify(body),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al actualizar las tareas');
-            }
-            return response.json();
-        })
-        .then(() => getTasks())
-        .catch(error => console.error('Error actualizando las tareas:', error));
-    };
-
     useEffect(() => {
-        getTasks();
+        getTasks(); // Fetch tasks when the component mounts
     }, []);
 
+    const getTasks = () => {
+        console.log("Fetching tasks...");
+        fetch(API_URL)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                setTasks(data.todos || []); // Use empty array if todos is not available
+            })
+            .catch((error) => console.error('Error fetching tasks:', error));
+    };
+
+    const addTask = () => {
+        const taskToAdd = { label: newTask, done: false };
+
+        fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(taskToAdd), // Send the new task object
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                setTasks([...tasks, taskToAdd]); // Update state with the new task
+                setNewTask(""); // Clear the input field
+            })
+            .catch((error) => console.error('Error adding task:', error));
+    };
+
+    const deleteTask = (taskId) => { // Use a specific task ID for deletion
+        fetch(`${API_URL}/${taskId}`, { // Adjust the URL to include the task ID
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                setTasks(tasks.filter((task) => task.id !== taskId)); // Remove the deleted task from state
+            })
+            .catch((error) => console.error('Error deleting task:', error));
+    };
+
     return (
-        <>
-            <h1>Lista de Tareas</h1>
+        <div>
+            <h1>Task List</h1>
+            <button onClick={getTasks}>Fetch Tasks</button>
             <ul>
                 {tasks.map((task, index) => (
                     <li key={index}>
                         {task.label}
-                        <button onClick={() => deleteTask(index)}>Eliminar</button>
+                        <button onClick={() => deleteTask(task.id)}>Delete</button> {/* Assuming task has an id */}
                     </li>
                 ))}
             </ul>
@@ -96,9 +76,10 @@ const ApiTask = () => {
                 type="text"
                 value={newTask}
                 onChange={(e) => setNewTask(e.target.value)}
+                placeholder="Enter new task"
             />
-            <button onClick={addTask}>Añadir Tarea</button>
-        </>
+            <button onClick={addTask}>Add Task</button>
+        </div>
     );
 };
 
