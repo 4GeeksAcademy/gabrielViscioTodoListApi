@@ -1,86 +1,134 @@
-import React, { useState, useEffect } from "react";
 
-const API_URL = 'https://playground.4geeks.com/todo/users/gabriel_viscio';
+import React, { useState, useEffect } from "react";
+import "../../styles/index.css"
+
 
 const ApiTask = () => {
-    const [tasks, setTasks] = useState([]);
-    const [newTask, setNewTask] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [newTask, setNewTask] = useState("");
+  const [editTaskId, setEditTaskId] = useState(null);
+  const [editTaskLabel, setEditTaskLabel] = useState("");
 
-    useEffect(() => {
-        getTasks(); // Fetch tasks when the component mounts
-    }, []);
+  const getTasks = async () => {
+    try {
+      const response = await fetch("https://playground.4geeks.com/todo/users/gabriel_viscio", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      setTasks(data.todos || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    const getTasks = () => {
-        console.log("Fetching tasks...");
-        fetch(API_URL)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                setTasks(data.todos || []); // Use empty array if todos is not available
-            })
-            .catch((error) => console.error('Error fetching tasks:', error));
-    };
+  const createTask = async (taskLabel) => {
+    const newTask = { label: taskLabel, done: false };
+    try {
+      const response = await fetch("https://playground.4geeks.com/todo/todos/gabriel_viscio", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      });
+      if (response.ok) {
+        getTasks();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    const addTask = () => {
-        const taskToAdd = { label: newTask, done: false };
+  const updateTask = async (id, updatedTask) => {
+    try {
+      const response = await fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTask),
+      });
+      if (response.ok) {
+        getTasks();
+        setEditTaskId(null);
+        setEditTaskLabel("");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-        fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(taskToAdd), // Send the new task object
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                setTasks([...tasks, taskToAdd]); // Update state with the new task
-                setNewTask(""); // Clear the input field
-            })
-            .catch((error) => console.error('Error adding task:', error));
-    };
+  const deleteTask = async (id) => {
+    try {
+      await fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      getTasks();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    const deleteTask = (taskId) => { // Use a specific task ID for deletion
-        fetch(`${API_URL}/${taskId}`, { // Adjust the URL to include the task ID
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then((data) => {
-                console.log(data);
-                setTasks(tasks.filter((task) => task.id !== taskId)); // Remove the deleted task from state
-            })
-            .catch((error) => console.error('Error deleting task:', error));
-    };
+  useEffect(() => {
+    getTasks();
+  }, []);
 
-    return (
-        <div>
-            <h1>Task List</h1>
-            <button onClick={getTasks}>Fetch Tasks</button>
-            <ul>
-                {tasks.map((task, index) => (
-                    <li key={index}>
-                        {task.label}
-                        <button onClick={() => deleteTask(task.id)}>Delete</button> {/* Assuming task has an id */}
-                    </li>
-                ))}
-            </ul>
-            <input
-                type="text"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                placeholder="Enter new task"
-            />
-            <button onClick={addTask}>Add Task</button>
-        </div>
-    );
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newTask.trim() === "") return;
+    createTask(newTask);
+    setNewTask("");
+  };
+
+  const handleUpdateSubmit = (e) => {
+    e.preventDefault();
+    if (editTaskLabel.trim() === "") return;
+    updateTask(editTaskId, { label: editTaskLabel, done: false });
+  };
+
+  return (
+    <div className="container-fluid">
+      <h1>Lista de tareas</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="text" value={newTask} onChange={(e) => setNewTask(e.target.value)} placeholder="Agregar nueva" />
+        <button type="submit">Agregar tarea</button>
+      </form>
+
+      {editTaskId && (
+        <form onSubmit={handleUpdateSubmit}>
+          <input
+            type="text"
+            value={editTaskLabel}
+            onChange={(e) => setEditTaskLabel(e.target.value)}
+            placeholder="Editar tarea"
+          />
+          <button type="submit">Actualizar tarea</button>
+        </form>
+      )}
+
+      <ul>
+        {tasks.map((task) => (
+          <li key={task.id}>
+            {editTaskId === task.id ? <span>{editTaskLabel}</span> : <span>{task.label}</span>}
+            <div className="buttons-container">
+              <button className="edit-button" onClick={() => setEditTaskId(task.id) || setEditTaskLabel(task.label)}>
+                Editar
+              </button>
+              <button className="delete-button" onClick={() => deleteTask(task.id)}>
+                Eliminar
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 };
 
 export default ApiTask;
